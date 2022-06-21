@@ -1,13 +1,20 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView, Response, status
+
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
+from rest_framework.authentication import TokenAuthentication
+
+from .permissions import AdminPermission
 
 from .models import User
 from .serializers import UserSerializer, LoginSerializer
 from users import serializers
 
 class UserView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [AdminPermission]
+
     def get(self, _):
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
@@ -21,6 +28,9 @@ class RegisterView(APIView):
         return Response(serializer.data, status.HTTP_201_CREATED)
 
 class UserViewDetail(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [AdminPermission]
+
     def get(self, request, user_id):
         try:
             user = User.objects.get(pk=user_id)
