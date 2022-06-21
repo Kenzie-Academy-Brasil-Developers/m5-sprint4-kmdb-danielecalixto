@@ -4,7 +4,14 @@ from rest_framework.views import APIView, Response, status
 from .models import Movie
 from .serializers import MovieSerializer
 
+from rest_framework.authentication import TokenAuthentication
+
+from .permissions import AdminPermission
+
 class MovieView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [AdminPermission]
+
     def get(self, _):
         movies = Movie.objects.all()
         serializer = MovieSerializer(movies, many=True)
@@ -17,6 +24,9 @@ class MovieView(APIView):
         return Response(serializer.data, status.HTTP_201_CREATED)
 
 class MovieViewDetail(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [AdminPermission]
+    
     def get(self, resquest, movie_id):
         try:
             movie = Movie.objects.get(pk=movie_id)
