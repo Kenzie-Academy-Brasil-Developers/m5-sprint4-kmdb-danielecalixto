@@ -13,7 +13,7 @@ class UserSerializer(serializers.Serializer):
     updated_at = serializers.DateTimeField(read_only=True)
 
     def create(self, validated_data):
-        user = User.objects.create(**validated_data)
+        user = User.objects.create_user(**validated_data)
         return user
 
 class LoginSerializer(serializers.Serializer):
