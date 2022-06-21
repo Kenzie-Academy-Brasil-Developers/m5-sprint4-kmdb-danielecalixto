@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from rest_framework.views import APIView, Response, status
 
 from .models import Movie
@@ -23,4 +23,11 @@ class MovieViewDetail(APIView):
         except Movie.DoesNotExist:
             return Response({"message": "Movie not found"}, status.HTTP_404_NOT_FOUND)
         serializer = MovieSerializer(movie)
+        return Response(serializer.data)
+
+    def patch(self, request, movie_id):
+        movie = get_object_or_404(Movie, pk=movie_id)
+        serializer = MovieSerializer(movie, request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data)
