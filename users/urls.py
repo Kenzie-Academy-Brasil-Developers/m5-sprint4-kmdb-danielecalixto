@@ -2,11 +2,11 @@ from django.urls import path
 #using Django Token Authentication without JWT
 from rest_framework.authtoken import views
 
-from .views import UserView, LoginView
-
+from .views import UserView, LoginView, UserViewDetail
 
 urlpatterns = [
     path("users/register/", UserView.as_view()),
+    path("users/<int:user_id>/", UserViewDetail.as_view()),
     path("token-auth", views.obtain_auth_token),
     path("users/login/", LoginView.as_view()),
 ]
