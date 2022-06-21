@@ -19,6 +19,15 @@ class UserView(APIView):
         serializer.save()
         return Response(serializer.data, status.HTTP_201_CREATED)
 
+class UserViewDetail(APIView):
+    def get(self, request, user_id):
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return Response({"message": "User not found"}, status.HTTP_404_NOT_FOUND)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
 class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
