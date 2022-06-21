@@ -5,13 +5,19 @@ from rest_framework.authtoken.models import Token
 
 from .models import User
 from .serializers import UserSerializer, LoginSerializer
+from users import serializers
 
-class UserView(APIView):  
+class UserView(APIView):
+    def get(self, _):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status.HTTP_201_CREATED)   
+        return Response(serializer.data, status.HTTP_201_CREATED)
 
 class LoginView(APIView):
     def post(self, request):
