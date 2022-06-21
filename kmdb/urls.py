@@ -18,7 +18,8 @@ from django.urls import include, path
 
 api_patterns = [
     path('', include('users.urls')),
-    path('', include('movies.urls'))
+    path('', include('movies.urls')),
+    path('', include('reviews.urls'))
 ]
 
 urlpatterns = [
