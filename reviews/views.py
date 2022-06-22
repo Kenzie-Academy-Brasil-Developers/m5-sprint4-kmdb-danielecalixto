@@ -1,5 +1,5 @@
 from django.forms import ValidationError
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView, Response, status
 
 from .models import Review
@@ -9,7 +9,7 @@ from rest_framework.authentication import TokenAuthentication
 
 from rest_framework.permissions import IsAuthenticated  
 
-from .permissions import ListPermission
+from .permissions import ListPermission, DeletePermission
 
 import ipdb
 
@@ -33,8 +33,15 @@ class ReviewView(APIView):
         return Response(serializer.data, status.HTTP_201_CREATED)
 
 class ReviewViewDetail(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [DeletePermission]
+
     def delete(self, request, review_id):
-        pass
+        review = get_object_or_404(Review, pk=review_id)
+        if review.user != request.user:
+            return Response({"detail": "You do not have permission to perform this action."}, status.HTTP_403_FORBIDDEN)      
+        review.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class AllReviewsView(APIView):
     def get(self, request):
