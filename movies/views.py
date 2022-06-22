@@ -4,18 +4,21 @@ from rest_framework.views import APIView, Response, status
 from .models import Movie
 from .serializers import MovieSerializer
 
+from rest_framework.pagination import PageNumberPagination
+
 from rest_framework.authentication import TokenAuthentication
 
 from .permissions import AdminPermission
 
-class MovieView(APIView):
+class MovieView(APIView, PageNumberPagination):
     authentication_classes = [TokenAuthentication]
     permission_classes = [AdminPermission]
 
-    def get(self, _):
+    def get(self, request):
         movies = Movie.objects.all()
-        serializer = MovieSerializer(movies, many=True)
-        return Response(serializer.data)
+        result_page = self.paginate_queryset(movies, request, view=self)
+        serializer = MovieSerializer(result_page, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def post(self, request):
         serializer = MovieSerializer(data=request.data)

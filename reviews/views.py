@@ -5,6 +5,8 @@ from rest_framework.views import APIView, Response, status
 from .models import Review
 from .serializers import ReviewSerializer
 
+from rest_framework.pagination import PageNumberPagination
+
 from rest_framework.authentication import TokenAuthentication
 
 from rest_framework.permissions import IsAuthenticated  
@@ -13,15 +15,15 @@ from .permissions import ListPermission, DeletePermission
 
 import ipdb
 
-class ReviewView(APIView):
+class ReviewView(APIView, PageNumberPagination):
     authentication_classes = [TokenAuthentication]
     permission_classes = [ListPermission]
 
-    def get(self, _, movie_id):
-        reviews = Review.objects.all()
-        reviews.filter(movie_id=movie_id)
-        serializer = ReviewSerializer(reviews, many=True)
-        return Response(serializer.data)
+    def get(self, request, movie_id):
+        reviews = Review.objects.filter(movie_id=movie_id)
+        result_page = self.paginate_queryset(reviews, request, view=self)
+        serializer = ReviewSerializer(result_page, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def post(self, request, movie_id):
         serializer = ReviewSerializer(data=request.data)
@@ -43,8 +45,9 @@ class ReviewViewDetail(APIView):
         review.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class AllReviewsView(APIView):
+class AllReviewsView(APIView, PageNumberPagination):
     def get(self, request):
         reviews = Review.objects.all()
-        serializer = ReviewSerializer(reviews, many=True)
-        return Response(serializer.data)
+        result_page = self.paginate_queryset(reviews, request, view=self)
+        serializer = ReviewSerializer(result_page, many=True)
+        return self.get_paginated_response(serializer.data)
