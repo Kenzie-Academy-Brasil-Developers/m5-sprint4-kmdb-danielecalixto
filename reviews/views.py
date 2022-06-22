@@ -1,8 +1,9 @@
+from django.forms import ValidationError
 from django.shortcuts import render
 from rest_framework.views import APIView, Response, status
 
 from .models import Review
-from .serializers import ReviewSerializer, StarError
+from .serializers import ReviewSerializer
 
 from rest_framework.authentication import TokenAuthentication
 
@@ -19,26 +20,14 @@ class ReviewView(APIView):
 
     def post(self, request, movie_id):
         serializer = ReviewSerializer(data=request.data)
-        
         serializer.is_valid(raise_exception=True)
         try:
-            serializer.save()
-        except StarError as err:
-            ipdb.set_trace()
-            if err.args[0]>10:
-                return Response(
-                    {"stars": "Ensure this value is less than or equal to 10."},
-                    status.HTTP_400_BAD_REQUEST
-                    )
-            else:
-                return Response(
-                    {"stars": "Ensure this value is greater than or equal to 1."},
-                    status.HTTP_400_BAD_REQUEST
-                    )
-
+            serializer.save(user=request.user, movie_id=movie_id)
+        except ValidationError as err:
+            return Response(err.message, status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status.HTTP_201_CREATED)
 
 class ReviewViewDetail(APIView):
-
     def delete(self, request, review_id):
         pass
 
