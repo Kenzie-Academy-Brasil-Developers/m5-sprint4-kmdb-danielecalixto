@@ -9,14 +9,19 @@ from rest_framework.authentication import TokenAuthentication
 
 from rest_framework.permissions import IsAuthenticated  
 
+from .permissions import ListPermission
+
 import ipdb
 
 class ReviewView(APIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [ListPermission]
 
     def get(self, _, movie_id):
-        pass
+        reviews = Review.objects.all()
+        reviews.filter(movie_id=movie_id)
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data)
 
     def post(self, request, movie_id):
         serializer = ReviewSerializer(data=request.data)
@@ -33,4 +38,6 @@ class ReviewViewDetail(APIView):
 
 class AllReviewsView(APIView):
     def get(self, request):
-        pass
+        reviews = Review.objects.all()
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data)
