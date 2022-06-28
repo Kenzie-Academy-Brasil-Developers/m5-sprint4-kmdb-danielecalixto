@@ -29,7 +29,7 @@ class ReviewView(APIView, PageNumberPagination):
         serializer = ReviewSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
-            serializer.save(user=request.user, movie_id=movie_id)
+            serializer.save(critic=request.user, movie_id=movie_id)
         except ValidationError as err:
             return Response(err.message, status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data, status.HTTP_201_CREATED)
