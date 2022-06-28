@@ -1,35 +1,28 @@
-from urllib import request
 from django.forms import ValidationError
 from rest_framework import serializers
-from rest_framework.fields import CurrentUserDefault
-from .models import Review, RecommendationType
+from .models import Review
 
 from movies.models import Movie
-from movies.serializers import MovieSerializer
 
 from users.models import User
-from users.serializers import UserSerializer
+
+class CriticSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name']
 
 
-import ipdb
+class ReviewSerializer(serializers.ModelSerializer):
+    critic = CriticSerializer(read_only=True)
 
-class ReviewSerializer(serializers.ModelSerializer):    
     class Meta:
         model = Review
-        fields = ['id', 'stars', 'review', 'spoilers', 'recommendation', 'movie_id']
-        write_only_fields = ['movie', 'user']
-        extra_kwargs = {'recommendation': {'required': False}, 'movie': {'required': False}, 'user': {'required': False}}
-        read_only_fields = ['critic']
+        fields = ['id', 'stars', 'review', 'spoilers', 'recommendation', 'movie_id', 'critic']
+        extra_kwargs = {'recommendation': {'required': False}, 'movie': {'required': False}, 'critic': {'required': False}}
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         recomm = instance.get_recommendation_display()
-        user = User.objects.get(email=instance.user)
-        critic = {}
-        critic['id'] = user.id
-        critic['first_name'] = user.first_name
-        critic['last_name'] = user.last_name
-        representation['critic'] = critic
         representation['recommendation'] = recomm
         return representation
 
@@ -43,6 +36,6 @@ class ReviewSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         movie_id = validated_data.pop('movie_id')
         movie = Movie.objects.get(pk=movie_id)
-        user = validated_data.pop('user')
-        review = Review.objects.create(movie=movie, user=user, **validated_data)
+        critic = validated_data.pop('critic')
+        review = Review.objects.create(movie=movie, critic=critic, **validated_data)
         return review
