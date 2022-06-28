@@ -1,19 +1,15 @@
 from django.forms import ValidationError
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView, Response, status
-
-from .models import Review
-from .serializers import ReviewSerializer
 
 from rest_framework.pagination import PageNumberPagination
 
 from rest_framework.authentication import TokenAuthentication
-
-from rest_framework.permissions import IsAuthenticated  
-
 from .permissions import ListPermission, DeletePermission
 
-import ipdb
+from .models import Review
+from .serializers import ReviewSerializer
+
 
 class ReviewView(APIView, PageNumberPagination):
     authentication_classes = [TokenAuthentication]

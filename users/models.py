@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from .utils import CustomUserManager
-from datetime import datetime
 from django.utils import timezone
+
 
 class User(AbstractUser):
     email = models.EmailField(max_length=255, unique=True)

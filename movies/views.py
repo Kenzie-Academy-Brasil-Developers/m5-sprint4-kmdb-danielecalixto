@@ -1,14 +1,14 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView, Response, status
-
-from .models import Movie
-from .serializers import MovieSerializer
 
 from rest_framework.pagination import PageNumberPagination
 
 from rest_framework.authentication import TokenAuthentication
-
 from .permissions import AdminPermission
+
+from .models import Movie
+from .serializers import MovieSerializer
+
 
 class MovieView(APIView, PageNumberPagination):
     authentication_classes = [TokenAuthentication]
