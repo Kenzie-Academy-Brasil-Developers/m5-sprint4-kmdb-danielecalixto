@@ -6,6 +6,7 @@ from movies.models import Movie
 
 from users.models import User
 
+
 class CriticSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -20,11 +21,11 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ['id', 'stars', 'review', 'spoilers', 'recommendation', 'movie_id', 'critic']
         extra_kwargs = {'recommendation': {'required': False}, 'movie': {'required': False}, 'critic': {'required': False}}
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        recomm = instance.get_recommendation_display()
-        representation['recommendation'] = recomm
-        return representation
+    # def to_representation(self, instance):
+    #     representation = super().to_representation(instance)
+    #     recomm = instance.get_recommendation_display()
+    #     representation['recommendation'] = recomm
+    #     return representation
 
     def validate_stars(self, value):
         if value>10:
