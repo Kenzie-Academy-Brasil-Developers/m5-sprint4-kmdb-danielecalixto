@@ -1,12 +1,15 @@
 from django.db import models
 
-class RecommendationType(models.TextChoices):
-    MUST = ("M", "Must Watch")
-    SHOULD = ("S", "Should Watch")
-    AVOID = ("A", "Avoid Watch")
-    NO = ("NO", "No Opinion")
+
 
 class Review(models.Model):
+    
+    class RecommendationType(models.TextChoices):
+        MUST = "Must Watch"
+        SHOULD = "Should Watch"
+        AVOID = "Avoid Watch"
+        NO = "No Opinion"
+
     stars = models.IntegerField()
     review = models.TextField()
     spoilers = models.BooleanField()
